@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Escala Turno 3x3</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Descubra quem está no turno 3x3</h1>
+    <div id="resultado">Carregando dados...</div>
+  </div>
+
+  <script>
+    const turmas = ["Turma B", "Turma A"];
+
+    const supervisores = {
+      "Turma A": {
+        dia: { nome: "Paulo Candido", telefone: "41992196052" },
+        noite: { nome: "Gabriel Kuerten", telefone: "41992229788" }
+      },
+      "Turma B": {
+        dia: { nome: "Ivan de Oliveira", telefone: "41996270451" },
+        noite: { nome: "Renato Alves", telefone: "41999552521" }
+      }
+    };
+
+    function verificarHoje() {
+      const resultado = document.getElementById("resultado");
+      const hoje = new Date();
+      const yyyy = hoje.getFullYear();
+      const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoje.getDate()).padStart(2, '0');
+      const hh = String(hoje.getHours()).padStart(2, '0');
+      const min = String(hoje.getMinutes()).padStart(2, '0');
+      const dataFormatada = `${yyyy}-${mm}-${dd}`;
+
+      if (yyyy !== 2025) {
+        resultado.innerHTML = `
+          ⚠️ Este sistema só funciona para datas de 2025.<br>
+          Data detectada: ${dd}/${mm}/${yyyy}<br>
+          Altere seu relógio ou use um campo de data manual.
+        `;
+        return;
+      }
+
+      const inicio = new Date("2025-01-01T00:00:00");
+      const atual = new Date(`${dataFormatada}T00:00:00`);
+      const diffDias = Math.floor((atual - inicio) / (1000 * 60 * 60 * 24));
+      const bloco = Math.floor(diffDias / 3);
+      const turma = turmas[bloco % 2];
+
+      const turno = (hoje.getHours() >= 6 && hoje.getHours() < 18) ? "dia" : "noite";
+      const supervisor = supervisores[turma][turno];
+
+      resultado.innerHTML = `
+        📅 Hoje é <strong>${dd}/${mm}/${yyyy}</strong><br>
+        🕒 Agora são ${hh}:${min}<br><br>
+        Supervisor de plantão:<br>
+        <strong>${supervisor.nome}</strong><br>
+        📞 <a href="tel:${supervisor.telefone}">${supervisor.telefone}</a><br>
+        (${turma}, turno ${turno.toUpperCase()})
+      `;
+    }
+
+    window.onload = verificarHoje;
+  </script>
+</body>
+</html>
