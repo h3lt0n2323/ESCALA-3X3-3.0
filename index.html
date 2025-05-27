@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Escala Turno 3x3</title>
+  <title>Escala Turno 3x3 - Início 3 de Janeiro</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -44,7 +44,7 @@
   </div>
 
   <script>
-    const turmas = ["Turma B", "Turma A"];
+    const turmas = ["Turma A", "Turma B"]; // Turma A começa primeiro em 3/jan
 
     const supervisores = {
       "Turma A": {
@@ -57,36 +57,62 @@
       }
     };
 
+    function calcularDiaDoAno(dia, mes) {
+      // Mes: 0 = Janeiro, 1 = Fevereiro, ...
+      const diasPorMes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      let total = 0;
+      for (let i = 0; i < mes; i++) {
+        total += diasPorMes[i];
+      }
+      return total + dia;
+    }
+
     function verificarHoje() {
       const resultado = document.getElementById("resultado");
       const hoje = new Date();
       const yyyy = hoje.getFullYear();
-      const mm = String(hoje.getMonth() + 1).padStart(2, '0');
-      const dd = String(hoje.getDate()).padStart(2, '0');
+      const mm = hoje.getMonth(); // 0 a 11
+      const dd = hoje.getDate();
       const hh = String(hoje.getHours()).padStart(2, '0');
       const min = String(hoje.getMinutes()).padStart(2, '0');
-      const dataFormatada = ${yyyy}-${mm}-${dd};
 
       if (yyyy !== 2025) {
         resultado.innerHTML = `
           ⚠️ Este sistema só funciona para datas de 2025.<br>
-          Data detectada: ${dd}/${mm}/${yyyy}<br>
+          Data detectada: ${dd}/${mm + 1}/${yyyy}<br>
           Altere seu relógio ou use um campo de data manual.
         `;
         return;
       }
 
-      const inicio = new Date("2025-01-01T00:00:00");
-      const atual = new Date(${dataFormatada}T00:00:00);
-      const diffDias = Math.floor((atual - inicio) / (1000 * 60 * 60 * 24));
-      const bloco = Math.floor(diffDias / 3);
+      const diaDoAno = calcularDiaDoAno(dd, mm);
+
+      // Dia do ano em que começa o ciclo (3 de janeiro)
+      const inicioCiclo = calcularDiaDoAno(3, 0); // 3/jan (mes=0)
+
+      // Se a data for anterior ao início do ciclo, mostra aviso
+      if (diaDoAno < inicioCiclo) {
+        resultado.innerHTML = `
+          ⚠️ Este sistema começa a funcionar a partir de 03/01/2025.<br>
+          Data detectada: ${dd}/${mm + 1}/${yyyy}<br>
+          Aguarde até o início do ciclo.
+        `;
+        return;
+      }
+
+      // Quantos dias passaram desde o início do ciclo
+      const diasDesdeInicio = diaDoAno - inicioCiclo;
+
+      // Cada bloco tem 3 dias, ciclo entre as turmas
+      const bloco = Math.floor(diasDesdeInicio / 3);
+
       const turma = turmas[bloco % 2];
 
       const turno = (hoje.getHours() >= 6 && hoje.getHours() < 18) ? "dia" : "noite";
       const supervisor = supervisores[turma][turno];
 
       resultado.innerHTML = `
-        📅 Hoje é <strong>${dd}/${mm}/${yyyy}</strong><br>
+        📅 Hoje é <strong>${dd}/${String(mm + 1).padStart(2, '0')}/${yyyy}</strong><br>
         🕒 Agora são ${hh}:${min}<br><br>
         Supervisor de plantão:<br>
         <strong>${supervisor.nome}</strong><br>
