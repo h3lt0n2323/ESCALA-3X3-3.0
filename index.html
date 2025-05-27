@@ -65,7 +65,7 @@
       const dd = String(hoje.getDate()).padStart(2, '0');
       const hh = String(hoje.getHours()).padStart(2, '0');
       const min = String(hoje.getMinutes()).padStart(2, '0');
-      const dataFormatada = `${yyyy}-${mm}-${dd}`;
+      const dataFormatada = ${yyyy}-${mm}-${dd};
 
       if (yyyy !== 2025) {
         resultado.innerHTML = `
@@ -77,7 +77,7 @@
       }
 
       const inicio = new Date("2025-01-01T00:00:00");
-      const atual = new Date(`${dataFormatada}T00:00:00`);
+      const atual = new Date(${dataFormatada}T00:00:00);
       const diffDias = Math.floor((atual - inicio) / (1000 * 60 * 60 * 24));
       const bloco = Math.floor(diffDias / 3);
       const turma = turmas[bloco % 2];
