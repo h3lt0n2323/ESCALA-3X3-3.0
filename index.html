@@ -101,24 +101,36 @@
       const turno = (hoje.getHours() >= 6 && hoje.getHours() < 18) ? "dia" : "noite";
       const supervisor = supervisores[turma][turno];
 
-      // Tratamento especial para 26/06/2025
-      const isEspecial = (dd === 26 && mm === 5 && yyyy === 2025 && turno === "noite" && turma === "Turma B");
+      // Férias do Renato: 05/06/2025 até 25/06/2025
+      const estaDeFerias = (
+        turma === "Turma B" &&
+        turno === "noite" &&
+        yyyy === 2025 &&
+        (
+          (mm === 5 && dd >= 5 && dd <= 25) // junho: mês 5
+        )
+      );
 
       let mensagem = `
         📅 Hoje é <strong>${dd}/${String(mm + 1).padStart(2, '0')}/${yyyy}</strong><br>
         🕒 Agora são ${hh}:${min}<br><br>
-        Supervisor de plantão:<br>
-        <strong>${supervisor.nome}</strong><br>
-        📞 <a href="tel:${supervisor.telefone}">${supervisor.telefone}</a><br>
-        (${turma}, turno ${turno.toUpperCase()})
       `;
 
-      if (isEspecial) {
-        const telefoneAlternativo = supervisores[turma]["dia"].telefone;
-        const nomeAlternativo = supervisores[turma]["dia"].nome;
-        mensagem += `<br><br>🛬 <strong>Renato retornou das férias hoje e está de volta ao turno da noite!</strong><br>
-        ☎️ Caso precise de suporte durante o dia, contate <strong>${nomeAlternativo}</strong>: 
-        <a href="tel:${telefoneAlternativo}">${telefoneAlternativo}</a>`;
+      if (estaDeFerias) {
+        const substituto = supervisores["Turma B"]["dia"];
+        mensagem += `
+           <h2><strong>💼Renato está de férias!</strong></h2><br>
+          ✅ Fale com: <strong>${substituto.nome}</strong><br>
+          📞 <a href="tel:${substituto.telefone}">${substituto.telefone}</a><br>
+          (Turma B, turno NOITE - substituído)
+        `;
+      } else {
+        mensagem += `
+          Supervisor de plantão:<br>
+          <strong>${supervisor.nome}</strong><br>
+          📞 <a href="tel:${supervisor.telefone}">${supervisor.telefone}</a><br>
+          (${turma}, turno ${turno.toUpperCase()})
+        `;
       }
 
       resultado.innerHTML = mensagem;
